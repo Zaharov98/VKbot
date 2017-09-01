@@ -13,7 +13,7 @@ log.basicConfig(level=log.DEBUG, format=" %(asctime)s - %(levelname)s - %(messag
 # logging.disable(logging.DEBUG)
 
 
-access_token_tel = "415697146:AAHAKG3tT06WvyUIk1kabVJV7HE_YIYnoJ4"
+access_token_tel = ""
 bot = telebot.TeleBot(access_token_tel)
 
 

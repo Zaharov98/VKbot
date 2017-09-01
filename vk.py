@@ -1,7 +1,7 @@
 """ VK-streaming-API interface
     Zaharov I. 29.08.17
     Python 3.6.2
-    VK token 3a665aea3a665aea3a665aeac73a3bd74e33a663a665aea631bf34c8f38de9b4ddbc1b2
+    VK token
     [{'tag': '27', 'value': 'кот'}, {'tag': '28', 'value': 'vk'}, {'tag': '35', 'value': 'кот'}]"""
 
 
@@ -12,7 +12,7 @@ import websocket
 import logging as log
 
 
-_access_token_vk = "3a665aea3a665aea3a665aeac73a3bd74e33a663a665aea631bf34c8f38de9b4ddbc1b2"
+_access_token_vk = ""
 
 
 def get_server_streaming_key():
