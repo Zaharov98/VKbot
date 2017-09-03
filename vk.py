@@ -35,11 +35,10 @@ def get_rules(stream):
         #tb.print_tb(e)
         log.exception(e.__context__)
     else:
-
         if data["code"] == 200:
-            return data["rules"]
+            return str(data["rules"])
         elif data["code"] == 400:
-            log.error(data["error"]["message"] + " : " + str(data["error"]["error_code"]))
+            return str(data["error"]["message"] + " : " + str(data["error"]["error_code"]))
 
 
 def set_rule(stream, rule, rule_tag):
@@ -56,7 +55,6 @@ def set_rule(stream, rule, rule_tag):
         #tb.print_tb(e)
         log.exception(e.__context__)
     else:
-
         if data["code"] == 400:
             return str(data["error"]["message"] + " : " + str(data["error"]["error_code"]))
         elif data["code"] == 200:
@@ -76,7 +74,6 @@ def delete_rule(stream, rule_tag):
     except Exception as e:
         log.exception(e.__context__)
     else:
-
         if data["code"] == 200:
             return str("rule " + str(rule_tag) + " deleted!")
         elif data["code"] == 400:
@@ -85,24 +82,26 @@ def delete_rule(stream, rule_tag):
 
 def listen_stream(stream, on_message=None):
     """getting massages from VK server"""
+
     headers = {"Connection": "upgrade", "Upgrade": "websocket", "Sec-Websocket-Version": "13"}
     websocket.enableTrace(True)
     ws = websocket.WebSocketApp("wss://{}/stream?key={} ".format(stream["server"], stream["key"]),
                                 on_message=on_message if on_message else _on_message, on_error=_on_error,
                                 on_close=_on_close, header=headers)
     ws.on_open = _on_open
-    ws.run_forever()
+    try:
+        ws.run_forever()
+    except Exception as e:
+        log.exception(e.__context__)
 
 
 def _on_message(ws, message):
     """VK post processing and formatting"""
     message = json.loads(message)
-
     # TODO: Parse vk server message
     post = message["event"]["event_type"] + "\n" +\
             message["event"]["text"].replace("<br>", "\n") +\
             message["event"]["event_url"] + "\n"
-
     log.debug(post)
 
 
