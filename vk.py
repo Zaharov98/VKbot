@@ -11,12 +11,14 @@ import websocket
 
 import logging as log
 
+import tokens
 
-_access_token_vk = ""
+
+_access_token_vk = tokens.vk
 
 
 def get_server_streaming_key():
-    """getting VK server handle"""
+    """ getting VK server handle """
     request_url = "https://api.vk.com/method/streaming.getServerUrl?access_token={}&v=5.64".format(_access_token_vk)
     log.debug("Request URL: " + request_url)
 
@@ -26,7 +28,7 @@ def get_server_streaming_key():
 
 
 def get_rules(stream):
-    """"""
+    """ return list of rules and it's ID-s """
     try:
         r = requests.get("https://{}/rules?key={}".format(stream["server"], stream["key"]))
         data = r.json()
@@ -42,8 +44,8 @@ def get_rules(stream):
 
 
 def set_rule(stream, rule, rule_tag):
-    """set criterion's for sending posts
-    send http POST request"""
+    """ set criterion's for sending posts
+        send http POST request """
     try:
         rule_params = {"rule": {"value": rule,  "tag": str(rule_tag)}}
         headers = {"Content-Type": "application/json"}
@@ -62,8 +64,8 @@ def set_rule(stream, rule, rule_tag):
 
 
 def delete_rule(stream, rule_tag):
-    """delete one of the criterion's for
-    sending posts. send http delete request"""
+    """ delete one of the criterion's for
+        sending posts. send http delete request """
     try:
         del_params = {"tag": str(rule_tag)}
         headers = {"Content-Type": "application/json"}
@@ -81,22 +83,22 @@ def delete_rule(stream, rule_tag):
 
 
 def listen_stream(stream, on_message=None):
-    """getting massages from VK server"""
-
-    headers = {"Connection": "upgrade", "Upgrade": "websocket", "Sec-Websocket-Version": "13"}
-    websocket.enableTrace(True)
-    ws = websocket.WebSocketApp("wss://{}/stream?key={} ".format(stream["server"], stream["key"]),
-                                on_message=on_message if on_message else _on_message, on_error=_on_error,
-                                on_close=_on_close, header=headers)
-    ws.on_open = _on_open
+    """ getting massages from VK server """
     try:
+        headers = {"Connection": "upgrade", "Upgrade": "websocket", "Sec-Websocket-Version": "13"}
+        websocket.enableTrace(True)
+        ws = websocket.WebSocketApp("wss://{}/stream?key={} ".format(stream["server"], stream["key"]),
+                                    on_message=on_message if on_message else _on_message, on_error=_on_error,
+                                    on_close=_on_close, header=headers)
+        ws.on_open = _on_open
+
         ws.run_forever()
     except Exception as e:
         log.exception(e.__context__)
 
 
 def _on_message(ws, message):
-    """VK post processing and formatting"""
+    """ VK post processing and formatting """
     message = json.loads(message)
     # TODO: Parse vk server message
     post = message["event"]["event_type"] + "\n" +\
